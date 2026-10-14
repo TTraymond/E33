@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mon Dossier E33</title>
+<style>
+/* Layout: une app mobile-first, une colonne, navigation du bas, sections accordéon. */
+:root{
+  --bg:#f3f5f9; --surface:#ffffff; --fg:#14213d; --muted:#56607a; --line:#d5dbe7;
+  --primary:#14213d; --on-primary:#ffffff; --accent:#e85d04; --on-accent:#ffffff; --accent-soft:#fde7d6;
+  --ok:#237a3b; --warn:#8a5200; --warn-bg:#fff4dc; --danger:#b42318;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1624; --surface:#18213a; --fg:#eef2fa; --muted:#a6b0c8; --line:#2c3857;
+    --primary:#9db8ff; --on-primary:#0f1624; --accent:#ff8a3d; --on-accent:#1a0f05; --accent-soft:#3a2517;
+    --ok:#6fd38f; --warn:#f2c46b; --warn-bg:#3a2e12; --danger:#ff8a80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1624; --surface:#18213a; --fg:#eef2fa; --muted:#a6b0c8; --line:#2c3857;
+  --primary:#9db8ff; --on-primary:#0f1624; --accent:#ff8a3d; --on-accent:#1a0f05; --accent-soft:#3a2517;
+  --ok:#6fd38f; --warn:#f2c46b; --warn-bg:#3a2e12; --danger:#ff8a80;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--fg);
+  font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(104px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  max-width:760px; margin:0 auto; min-width:0; overflow-x:hidden;
+}
+h1{font-size:1.5rem;margin:0;line-height:1.2}
+h2{font-size:1.15rem;margin:0 0 6px}
+p{margin:6px 0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 0 14px}
+.muted{color:var(--muted);font-size:.9rem}
+.aide{color:var(--muted);margin:4px 0 12px;font-size:.95rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;min-width:0}
+label{display:block;font-weight:600;margin:12px 0 4px;font-size:.95rem}
+input[type=text],input[type=date],select,textarea{
+  width:100%;font:inherit;color:var(--fg);background:var(--bg);
+  border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-width:0;
+}
+textarea{min-height:90px;resize:vertical}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.8}
+.btn{
+  font:inherit;font-weight:600;border:0;border-radius:12px;padding:13px 18px;min-height:48px;
+  background:var(--primary);color:var(--on-primary);cursor:pointer;width:100%;margin-top:14px;
+}
+.btn.secondary{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.accent{background:var(--accent);color:var(--on-accent)}
+.btn.small{width:auto;margin-top:0;min-height:40px;padding:8px 14px;font-size:.9rem}
+.grid2{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:600px){.grid2{grid-template-columns:1fr 1fr}}
+.alert{border-radius:12px;padding:10px 12px;background:var(--warn-bg);color:var(--warn);margin:8px 0;font-size:.93rem}
+.ok{color:var(--ok);font-weight:600}
+.badge{display:inline-block;font-size:.78rem;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;padding:0 16px}
+details.sec summary{cursor:pointer;font-weight:700;padding:16px 0;list-style:none;min-height:48px;display:flex;align-items:center}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec summary::after{content:"+";margin-left:auto;font-size:1.3rem;color:var(--muted)}
+details.sec[open] summary::after{content:"−"}
+details.sec[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.check{display:flex;align-items:center;gap:8px;margin:0;font-weight:400;min-height:36px}
+.check input{width:20px;height:20px;accent-color:var(--accent);flex:0 0 auto}
+.tool{padding:10px 0;border-bottom:1px solid var(--line)}
+.tool strong{display:block;margin-bottom:4px}
+.tool .checks{display:flex;gap:18px;flex-wrap:wrap}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
+.progress span{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.kpi div{background:var(--bg);border-radius:10px;padding:10px 4px;min-width:0}
+.kpi b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.timer{font-size:4.5rem;font-variant-numeric:tabular-nums;text-align:center;font-weight:800;line-height:1;margin:14px 0;color:var(--fg)}
+.timer.warn{color:var(--warn)}
+.timer.stop{color:var(--danger)}
+.row-btns{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.entry{border-left:4px solid var(--accent)}
+nav.tabs{
+  position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;background:var(--surface);
+  border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
+}
+nav.tabs button{
+  flex:1;font:inherit;font-size:.82rem;background:none;border:0;color:var(--muted);
+  padding:10px 2px;min-height:58px;cursor:pointer;min-width:0;
+}
+nav.tabs button[aria-current="page"]{color:var(--accent);font-weight:700;box-shadow:inset 0 3px 0 var(--accent)}
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));
+  background:var(--primary);color:var(--on-primary);padding:10px 16px;border-radius:999px;
+  opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;z-index:20;text-align:center;
+}
+.toast.show{opacity:1}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+/* Document d'impression : visible seulement à l'impression (PDF) */
+#printArea{display:none}
+@media print{
+  body > *:not(#printArea){display:none!important}
+  #printArea{display:block!important;color:#000;background:#fff;font-size:11pt}
+  body{background:#fff;color:#000;padding:0;max-width:none}
+  #printArea h1{font-size:20pt;margin:0 0 6pt}
+  #printArea h2{font-size:14pt;margin:16pt 0 6pt;border-bottom:1px solid #999;padding-bottom:3pt;break-after:avoid}
+  #printArea table{width:100%;border-collapse:collapse;margin-top:6pt}
+  #printArea th,#printArea td{border:1px solid #888;padding:4pt;vertical-align:top;text-align:left;font-size:10pt}
+  #printArea p{margin:3pt 0}
+  #printArea .pre{white-space:pre-wrap}
+  #printArea .block{break-inside:avoid}
+  @page{size:A4;margin:16mm}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Mon Dossier E33</h1>
+  <span id="saveState" class="muted">Enregistré automatiquement</span>
+</header>
+
+<!-- ========== JOURNAL ========== -->
+<section data-view="journal">
+  <div class="card">
+    <h2>Journal de terrain</h2>
+    <p class="aide">Note une situation juste après l'avoir vécue. Il te faut 3 situations minimum. Pas besoin de noms de clients.</p>
+    <div id="journalAlert"></div>
+  </div>
+
+  <form id="journalForm" class="card" autocomplete="off">
+    <h2>Nouvelle situation</h2>
+    <label for="jDate">Date</label>
+    <input type="date" id="jDate">
+
+    <label for="jBesoin">Ce que le client voulait</label>
+    <textarea id="jBesoin" placeholder="Ex : une crème pour peau sèche, budget 20 €, pressé"></textarea>
+
+    <label for="jOutil">Outil utilisé</label>
+    <select id="jOutil"></select>
+
+    <label for="jReaction">Ce que j'ai fait</label>
+    <textarea id="jReaction" placeholder="Commence par « J'ai… » Ex : J'ai proposé la carte de fidélité et noté son e-mail."></textarea>
+
+    <label for="jRebond">Vente au rebond</label>
+    <select id="jRebond">
+      <option value="aucun">Aucune</option>
+      <option value="repere">Repérée (je l'ai vue)</option>
+      <option value="provoquee">Provoquée (je l'ai proposée)</option>
+      <option value="conclue">Conclue (le client a acheté)</option>
+    </select>
+
+    <label for="jPoint">Mon point fort ou point à améliorer</label>
+    <textarea id="jPoint" placeholder="Ex : Je suis à l'aise, mais je dois mieux reformuler."></textarea>
+
+    <button class="btn" type="submit">Ajouter la situation</button>
+  </form>
+
+  <h2>Mes situations (<span id="jCount">0</span>)</h2>
+  <div id="journalList"></div>
+</section>
+
+<!-- ========== DOSSIER ========== -->
+<section data-view="dossier" hidden>
+  <div class="card">
+    <h2>Mon dossier</h2>
+    <p class="aide">Remplis chaque partie. Tape sur une partie pour l'ouvrir. Tout est sauvegardé tout seul.</p>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <p class="muted" id="progressText"></p>
+    <div id="dossierAlerts"></div>
+  </div>
+
+  <details class="sec" open>
+    <summary>1. Fiche de l'entreprise</summary>
+    <div id="fEntreprise"></div>
+  </details>
+
+  <details class="sec">
+    <summary>2. Étude de marché</summary>
+    <div id="fMarche"></div>
+  </details>
+
+  <details class="sec">
+    <summary>3. Outils de fidélisation</summary>
+    <p class="aide">Coche ce qui existe dans le magasin, et ce que tu as vu ou utilisé pendant la PFMP.</p>
+    <div id="toolsList"></div>
+  </details>
+
+  <details class="sec">
+    <summary>4. Ma contribution</summary>
+    <p class="aide">Décris 3 situations où tu as aidé à fidéliser un client. Écris « J'ai… ».</p>
+    <button class="btn secondary" id="btnFromJournal" type="button">Reprendre mes situations du journal</button>
+    <label for="contribTexte">Mes situations</label>
+    <textarea id="contribTexte" data-bind="contrib.texte" style="min-height:200px" placeholder="Situation 1 : …&#10;J'ai …"></textarea>
+  </details>
+
+  <details class="sec">
+    <summary>5. Mes deux actions de fidélisation</summary>
+    <p class="aide">Propose 2 actions. Le jury en retiendra une seule.</p>
+    <div id="fAction0"></div>
+    <div id="fAction1"></div>
+  </details>
+</section>
+
+<!-- ========== ACTION (situation 2) ========== -->
+<section data-view="action" hidden>
+  <div class="card">
+    <h2>Suivi de l'action retenue</h2>
+    <p class="aide">Le jury choisit une seule action. Indique laquelle, puis note les chiffres avant et après.</p>
+    <label for="choix">Action retenue par le jury</label>
+    <select id="choix" data-bind="choix"></select>
+  </div>
+
+  <div class="card">
+    <h2>Mes rebonds (calculés depuis le journal)</h2>
+    <div class="kpi">
+      <div><b id="kRepere">0</b>repérés</div>
+      <div><b id="kProv">0</b>provoqués</div>
+      <div><b id="kConc">0</b>conclus</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Chiffres avant / après</h2>
+    <p class="aide">Mets des nombres. Si tu ne les as pas, laisse vide et explique dans le bilan.</p>
+    <div class="grid2" id="fChiffres"></div>
+    <p id="deltas" class="ok"></p>
+  </div>
+
+  <div class="card">
+    <h2>Bilan</h2>
+    <div id="fBilan"></div>
+  </div>
+</section>
+
+<!-- ========== ORAL ========== -->
+<section data-view="oral" hidden>
+  <div class="card">
+    <h2>Chrono de présentation</h2>
+    <p class="aide">10 minutes de présentation. Ensuite, 10 minutes de questions.</p>
+    <div class="timer" id="timer">10:00</div>
+    <div class="row-btns">
+      <button class="btn accent" id="btnStart" type="button">Démarrer</button>
+      <button class="btn secondary" id="btnReset" type="button">Remettre à 10:00</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Avant de passer</h2>
+    <p class="aide">Coche ce que ta présentation couvre.</p>
+    <div id="oralChecks"></div>
+  </div>
+</section>
+
+<!-- ========== EXPORT ========== -->
+<section data-view="export" hidden>
+  <div class="card">
+    <h2>Mon document</h2>
+    <p class="aide">Pour le PDF, dans la fenêtre d'impression, choisis « Enregistrer au format PDF ».</p>
+    <button class="btn accent" id="btnPdf" type="button">Imprimer ou enregistrer en PDF</button>
+  </div>
+
+  <div class="card">
+    <h2>Diaporama PowerPoint</h2>
+    <p class="aide">Crée un fichier .pptx avec le plan de l'oral. Tu peux l'ouvrir dans PowerPoint, Google Slides ou l'importer dans Canva.</p>
+    <button class="btn accent" id="btnPptx" type="button">Télécharger le diaporama (.pptx)</button>
+  </div>
+
+  <div class="card">
+    <h2>Sauvegarde</h2>
+    <p class="aide">Ton travail reste sur cet appareil. Pour le transférer (téléphone vers PC), télécharge une sauvegarde puis ouvre-la sur l'autre appareil.</p>
+    <button class="btn secondary" id="btnSave" type="button">Télécharger ma sauvegarde</button>
+    <label for="restoreFile">Restaurer une sauvegarde</label>
+    <input type="file" id="restoreFile" accept=".json,application/json">
+  </div>
+
+  <div class="card">
+    <h2>Recommencer</h2>
+    <p class="aide">Efface tout le contenu de cet appareil. Pense à télécharger une sauvegarde avant.</p>
+    <button class="btn secondary" id="btnClear" type="button">Tout effacer</button>
+  </div>
+</section>
+
+<div id="printArea"></div>
+
+<nav class="tabs" aria-label="Navigation principale">
+  <button type="button" data-go="journal" aria-current="page">Journal</button>
+  <button type="button" data-go="dossier">Dossier</button>
+  <button type="button" data-go="action">Action</button>
+  <button type="button" data-go="oral">Oral</button>
+  <button type="button" data-go="export">Exporter</button>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- Données ---------- */
+const KEY = 'monDossierE33.v1';
+const TOOLS = ['Solution CRM','Chatbot','Application mobile','Instagram','Facebook','Site web','Flash code','Borne ou automate','Ordinateur ou tablette','Carte de fidélité','Forum','Autre'];
+const REBOND = {aucun:'Aucune', repere:'Repérée', provoquee:'Provoquée', conclue:'Conclue'};
+const ORAL_CHECKS = [
+  "J'ai rappelé l'action retenue et pourquoi je l'ai choisie",
+  "J'ai montré mes outils et leur cohérence avec le client",
+  "J'ai raconté des situations avec « J'ai… »",
+  "J'ai cité mes sources internes et externes",
+  "J'ai donné des chiffres avant / après",
+  "J'ai analysé les difficultés et mes acquis",
+  "J'ai proposé des améliorations",
+  "Je n'ai pas lu mes diapos",
+  "Je tiens dans 10 minutes"
+];
+const FIELDS = {
+  entreprise: [
+    {k:'entreprise.nom', l:'Nom du magasin', ph:'Ex : Boutique Le Panier Vert'},
+    {k:'entreprise.activite', l:'Activité principale', ph:'Ex : vente de prêt-à-porter'},
+    {k:'entreprise.statut', l:'Forme juridique', t:'select', o:['SA','SARL','SAS','EURL','Autre','Je ne sais pas']},
+    {k:'entreprise.effectif', l:'Effectif et surface de vente', ph:'Ex : 6 salariés, 120 m²'},
+    {k:'entreprise.gamme', l:'Niveau de gamme des produits', ph:'Ex : milieu de gamme'},
+    {k:'entreprise.prix', l:'Stratégie de prix', ph:'Ex : prix bas, promotions le samedi'},
+    {k:'entreprise.com', l:'Outils de communication', t:'area', ph:'Ex : Instagram, affiches en vitrine, flyers'}
+  ],
+  marche: [
+    {k:'marche.segment', l:'Segment étudié', ph:'Ex : cosmétiques bio'},
+    {k:'marche.ca', l:"Chiffre d'affaires du marché (si connu)", ph:'Volume et valeur'},
+    {k:'marche.circuit', l:'Circuit de distribution', t:'select', o:['Circuit direct (du producteur au client)','Circuit court (1 intermédiaire)','Circuit long (plusieurs intermédiaires)']},
+    {k:'marche.concurrents.0', l:'Concurrent n°1 (direct ou indirect)'},
+    {k:'marche.concurrents.1', l:'Concurrent n°2 (direct ou indirect)'},
+    {k:'marche.concurrents.2', l:'Concurrent n°3 (direct ou indirect)'},
+    {k:'marche.conso', l:'Profil des consommateurs', t:'area', ph:'Âge, produits achetés, panier moyen, motivations, freins'},
+    {k:'marche.opp', l:'Opportunités', t:'area', ph:'Ex : clients qui cherchent du bio, achats en ligne en hausse'},
+    {k:'marche.menaces', l:'Menaces', t:'area', ph:'Ex : concurrent moins cher, baisse du pouvoir d\'achat'},
+    {k:'marche.sources', l:'Mes sources', t:'area', ph:'Interne : fichier client, tableau de bord… Externe : article, étude…'}
+  ]
+};
+const ACTION_FIELDS = [
+  {k:'titre', l:"Titre de l'action", ph:'Ex : Carte de fidélité avec cadeau au 5e achat'},
+  {k:'cible', l:'Cible', t:'select', o:['Top 10 clients','Zappeurs','Nouveaux clients','Autre']},
+  {k:'cout', l:'Coût estimé (€)', ph:'Ex : 150'},
+  {k:'outils', l:'Outils et moyens nécessaires', t:'area', ph:'Matériel, personnel, logiciel'},
+  {k:'objectif', l:'Objectif attendu (chiffré)', ph:'Ex : +10 % de fréquence d\'achat en 2 mois'},
+  {k:'indicateur', l:'Indicateur de réussite', ph:'Ex : nombre de cartes créées, panier moyen'},
+  {k:'justif', l:'Pourquoi cette action dans mon magasin ?', t:'area', ph:'Appuie-toi sur tes données.'}
+];
+const CHIFFRES = [
+  {k:'bilan.ventesAvant', l:'Ventes avant l\'action (nombre)', n:true},
+  {k:'bilan.ventesApres', l:'Ventes après l\'action (nombre)', n:true},
+  {k:'bilan.panierAvant', l:'Panier moyen avant (€)', n:true},
+  {k:'bilan.panierApres', l:'Panier moyen après (€)', n:true},
+  {k:'bilan.adhesions', l:'Nouvelles adhésions carte de fidélité', n:true},
+  {k:'bilan.fiches', l:'Fiches clients ajoutées ou enrichies dans le SIC', n:true}
+];
+const BILAN = [
+  {k:'bilan.resultats', l:'Résultats et analyse', t:'area', ph:'Ce que les chiffres montrent'},
+  {k:'bilan.difficultes', l:'Difficultés rencontrées et comment je les ai surmontées', t:'area'},
+  {k:'bilan.acquis', l:'Ce que j\'ai appris (personnel et professionnel)', t:'area'},
+  {k:'bilan.ameliorations', l:"Propositions d'amélioration", t:'area', ph:'Ce que je ferais autrement, et pourquoi'}
+];
+
+/* ---------- Données : chargement et sauvegarde ---------- */
+function DEFAULT(){
+  return {entreprise:{}, marche:{concurrents:['','','']}, contrib:{texte:''}, outils:[], actions:[{},{}], choix:'0', journal:[], bilan:{}, oral:{checks:[]}};
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw) return Object.assign(DEFAULT(), JSON.parse(raw));
+  }catch(e){}
+  return DEFAULT();
+}
+let S = load();
+function save(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(S));
+    $('#saveState').textContent = 'Enregistré automatiquement';
+  }catch(e){
+    $('#saveState').textContent = 'Non enregistré (stockage bloqué sur cet appareil)';
+  }
+}
+function getP(o,p){ return p.split('.').reduce((a,k)=> a==null ? undefined : a[k], o); }
+function setP(o,p,v){
+  const ks = p.split('.');
+  let c = o;
+  ks.slice(0,-1).forEach((k,i)=>{
+    if(c[k]==null) c[k] = /^\d+$/.test(ks[i+1]) ? [] : {};
+    c = c[k];
+  });
+  c[ks[ks.length-1]] = v;
+}
+function filled(p){
+  const v = getP(S,p);
+  return typeof v === 'string' ? v.trim() !== '' : !!v;
+}
+
+/* ---------- Outils ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastTimer;
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2600);
+}
+
+/* ---------- Rendu des champs ---------- */
+function fieldHTML(f){
+  const id = 'f_' + f.k.replace(/\./g,'_');
+  let input;
+  if(f.t === 'select'){
+    input = `<select id="${id}" data-bind="${f.k}"><option value="">Choisir…</option>${f.o.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`;
+  } else if(f.t === 'area'){
+    input = `<textarea id="${id}" data-bind="${f.k}" placeholder="${esc(f.ph||'')}"></textarea>`;
+  } else {
+    input = `<input type="text" id="${id}" data-bind="${f.k}" placeholder="${esc(f.ph||'')}" ${f.n ? 'inputmode="decimal"' : ''}>`;
+  }
+  return `<div><label for="${id}">${esc(f.l)}</label>${input}</div>`;
+}
+function renderFields(sel, list){ $(sel).innerHTML = list.map(fieldHTML).join(''); }
+
+function renderStatic(){
+  // Liste des outils
+  $('#toolsList').innerHTML = TOOLS.map((t,i)=>`
+    <div class="tool">
+      <strong>${esc(t)}</strong>
+      <div class="checks">
+        <label class="check"><input type="checkbox" data-bind="outils.${i}.present"> Présent dans le magasin</label>
+        <label class="check"><input type="checkbox" data-bind="outils.${i}.utilise"> Utilisé pendant la PFMP</label>
+      </div>
+    </div>`).join('');
+
+  renderFields('#fEntreprise', FIELDS.entreprise);
+  renderFields('#fMarche', FIELDS.marche);
+  renderFields('#fChiffres', CHIFFRES);
+  renderFields('#fBilan', BILAN);
+  [0,1].forEach(i=>{
+    const list = ACTION_FIELDS.map(f => Object.assign({}, f, {k:`actions.${i}.${f.k}`}));
+    $(`#fAction${i}`).innerHTML = `
+      <details class="sec" ${i===0?'open':''}>
+        <summary>Action ${i+1}</summary>
+        ${list.map(fieldHTML).join('')}
+      </details>`;
+  });
+
+  // Oral
+  $('#oralChecks').innerHTML = ORAL_CHECKS.map((t,i)=>`
+    <label class="check" style="margin:10px 0"><input type="checkbox" data-bind="oral.checks.${i}"> ${esc(t)}</label>`).join('');
+
+  // Outil du journal
+  $('#jOutil').innerHTML = TOOLS.map(t=>`<option>${esc(t)}</option>`).join('');
+
+  $('#jDate').value = localDateISO();
+}
+function localDateISO(){
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0,10);
+}
+
+/* ---------- Liaison des champs à l'état ---------- */
+function bindAll(){
+  $$('[data-bind]').forEach(el=>{
+    if(el._bound) return;
+    el._bound = true;
+    const v = getP(S, el.dataset.bind);
+    if(el.type === 'checkbox') el.checked = !!v;
+    else el.value = v ?? '';
+    const onChange = ()=>{
+      setP(S, el.dataset.bind, el.type === 'checkbox' ? el.checked : el.value);
+      save();
+      refresh();
+    };
+    el.addEventListener('input', onChange);
+    el.addEventListener('change', onChange);
+  });
+}
+
+/* ---------- Affichage calculé ---------- */
+function renderJournal(){
+  const list = $('#journalList');
+  $('#jCount').textContent = S.journal.length;
+  list.innerHTML = S.journal.length
+    ? S.journal.map((e,i)=>`
+      <div class="card entry">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+          <strong>Client ${i+1}</strong>
+          <span class="badge">${esc(REBOND[e.rebond] || 'Aucune')}</span>
+        </div>
+        <p class="muted">${esc(e.date)} · ${esc(e.outil)}</p>
+        <p><b>Besoin :</b> ${esc(e.besoin)}</p>
+        <p><b>Mon action :</b> ${esc(e.reaction)}</p>
+        ${e.point ? `<p><b>Point :</b> ${esc(e.point)}</p>` : ''}
+        <button class="btn secondary small" type="button" data-del="${i}">Supprimer</button>
+      </div>`).join('')
+    : '<p class="aide">Aucune situation pour l\'instant. Ajoute ta première ci-dessus.</p>';
+}
+function renderJournalAlert(){
+  const n = S.journal.length;
+  $('#journalAlert').innerHTML = n < 3
+    ? `<div class="alert">Encore ${3-n} situation(s) pour atteindre le minimum de 3.</div>`
+    : `<p class="ok">${n} situations enregistrées. C'est suffisant pour le dossier.</p>`;
+}
+const ACTION_CRIT = i => ['titre','cible','cout','outils','objectif','indicateur','justif'].map(k=>`actions.${i}.${k}`);
+const CRIT = ['entreprise.nom','entreprise.activite','entreprise.statut','marche.segment','marche.circuit','marche.conso','marche.sources','marche.concurrents.0','marche.concurrents.1','marche.concurrents.2','contrib.texte', ...ACTION_CRIT(0), ...ACTION_CRIT(1)];
+function renderProgress(){
+  const outilsOk = S.outils.some(o => o && o.present);
+  const done = CRIT.filter(filled).length + (S.journal.length >= 3 ? 1 : 0) + (outilsOk ? 1 : 0);
+  const total = CRIT.length + 2;
+  const pct = Math.round(done / total * 100);
+  $('#progressBar').style.width = pct + '%';
+  $('#progressText').textContent = `${pct} % rempli (${done} sur ${total} éléments clés)`;
+}
+function renderAlerts(){
+  const al = [];
+  const n = S.journal.length;
+  if(n < 3) al.push(`Il te faut ${3-n} situation(s) de plus dans le journal.`);
+  const contrib = S.contrib?.texte || '';
+  if(contrib.trim() && !/(\bj['’]|\bje\b)/i.test(contrib)) al.push("Ta contribution ne parle pas de toi. Écris « J'ai… » pour montrer ce que tu as fait.");
+  const nc = (S.marche?.concurrents || []).filter(x => x && x.trim()).length;
+  if(nc < 3 && (S.marche?.concurrents || []).some(x=>x)) al.push(`Identifie 3 concurrents (il en manque ${3-nc}).`);
+  if(!filled('marche.sources') && filled('marche.segment')) al.push('Indique tes sources : au moins une interne (fichier client…) et une externe (article, étude…).');
+  [0,1].forEach(i=>{
+    const a = S.actions[i] || {};
+    if(a.titre && (!a.cout || !a.objectif || !a.indicateur)) al.push(`Action ${i+1} : ajoute le coût, l'objectif et l'indicateur.`);
+  });
+  $('#dossierAlerts').innerHTML = al.length
+    ? al.map(x=>`<div class="alert">${esc(x)}</div>`).join('')
+    : '<p class="ok">Rien d\'urgent. Continue à compléter les parties.</p>';
+}
+function pct(a,b){
+  const x = parseFloat(a), y = parseFloat(b);
+  if(!x || isNaN(x) || isNaN(y)) return null;
+  return Math.round((y - x) / x * 100);
+}
+function renderAction(){
+  const count = r => S.journal.filter(e => e.rebond === r).length;
+  $('#kRepere').textContent = count('repere');
+  $('#kProv').textContent = count('provoquee');
+  $('#kConc').textContent = count('conclue');
+
+  const sel = $('#choix');
+  const titles = [0,1].map(i => (S.actions[i] && S.actions[i].titre) || `Action ${i+1}`);
+  sel.innerHTML = titles.map((t,i)=>`<option value="${i}">${esc(t)}</option>`).join('');
+  sel.value = S.choix;
+
+  const v = pct(getP(S,'bilan.ventesAvant'), getP(S,'bilan.ventesApres'));
+  const p = pct(getP(S,'bilan.panierAvant'), getP(S,'bilan.panierApres'));
+  const parts = [];
+  if(v !== null) parts.push(`Ventes : ${v > 0 ? '+' : ''}${v} %`);
+  if(p !== null) parts.push(`Panier moyen : ${p > 0 ? '+' : ''}${p} %`);
+  $('#deltas').textContent = parts.join(' · ');
+}
+function refresh(){
+  renderJournal();
+  renderJournalAlert();
+  renderProgress();
+  renderAlerts();
+  renderAction();
+}
+
+/* ---------- Navigation ---------- */
+function go(view){
+  $$('section[data-view]').forEach(s => s.hidden = s.dataset.view !== view);
+  $$('nav.tabs button').forEach(b => {
+    if(b.dataset.go === view) b.setAttribute('aria-current','page');
+    else b.removeAttribute('aria-current');
+  });
+  window.scrollTo({top:0});
+}
+$$('nav.tabs button').forEach(b => b.addEventListener('click', ()=> go(b.dataset.go)));
+
+/* ---------- Journal : ajout et suppression ---------- */
+$('#journalForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const besoin = $('#jBesoin').value.trim();
+  const reaction = $('#jReaction').value.trim();
+  if(!besoin || !reaction){
+    toast('Écris au moins le besoin du client et ce que tu as fait.');
+    return;
+  }
+  S.journal.push({
+    date: $('#jDate').value || localDateISO(),
+    besoin,
+    outil: $('#jOutil').value,
+    reaction,
+    rebond: $('#jRebond').value,
+    point: $('#jPoint').value.trim()
+  });
+  save();
+  ['#jBesoin','#jReaction','#jPoint'].forEach(s => $(s).value = '');
+  $('#jRebond').value = 'aucun';
+  refresh();
+  toast('Situation ajoutée');
+});
+$('#journalList').addEventListener('click', e => {
+  const b = e.target.closest('[data-del]');
+  if(!b) return;
+  if(b.dataset.armed){
+    S.journal.splice(+b.dataset.del, 1);
+    save(); refresh();
+    toast('Situation supprimée');
+  } else {
+    b.dataset.armed = '1';
+    b.textContent = 'Confirmer la suppression';
+  }
+});
+
+/* ---------- Dossier : reprise du journal ---------- */
+$('#btnFromJournal').addEventListener('click', ()=>{
+  if(!S.journal.length){ toast('Ton journal est vide pour l\'instant.'); return; }
+  const txt = S.journal.map((e,i)=> `Situation ${i+1} : ${e.besoin}\nJ'ai : ${e.reaction}`).join('\n\n');
+  const el = $('#contribTexte');
+  el.value = el.value.trim() ? el.value.trim() + '\n\n' + txt : txt;
+  setP(S, 'contrib.texte', el.value);
+  save(); refresh();
+  toast('Journal repris. Relis et précise tes mots.');
+});
+
+/* ---------- Chrono de l'oral ---------- */
+let remaining = 600, timerId = null;
+function paintTimer(){
+  const m = String(Math.floor(remaining/60)).padStart(2,'0');
+  const s = String(remaining%60).padStart(2,'0');
+  const el = $('#timer');
+  el.textContent = `${m}:${s}`;
+  el.className = 'timer' + (remaining <= 60 ? ' stop' : remaining <= 180 ? ' warn' : '');
+}
+$('#btnStart').addEventListener('click', ()=>{
+  if(timerId){ clearInterval(timerId); timerId = null; $('#btnStart').textContent = 'Reprendre'; return; }
+  if(remaining <= 0) remaining = 600;
+  $('#btnStart').textContent = 'Pause';
+  timerId = setInterval(()=>{
+    remaining--;
+    paintTimer();
+    if(remaining <= 0){
+      clearInterval(timerId); timerId = null;
+      $('#btnStart').textContent = 'Démarrer';
+      toast('Temps écoulé');
+    }
+  }, 1000);
+});
+$('#btnReset').addEventListener('click', ()=>{
+  clearInterval(timerId); timerId = null;
+  remaining = 600; paintTimer();
+  $('#btnStart').textContent = 'Démarrer';
+});
+
+/* ---------- Document d'impression ---------- */
+function row(label, value){
+  return value && String(value).trim() ? `<p><b>${esc(label)} :</b> ${esc(value)}</p>` : '';
+}
+function buildPrint(){
+  const e = S.entreprise, m = S.marche;
+  const ch = S.actions[+S.choix] || {};
+  const tools = TOOLS.map((t,i)=>({t, p:S.outils[i]?.present, u:S.outils[i]?.utilise})).filter(x=>x.p || x.u);
+  const journalRows = S.journal.map((j,i)=>`
+    <tr><td>${i+1}</td><td>${esc(j.date)}</td><td>${esc(j.besoin)}</td><td>${esc(j.reaction)}</td><td>${esc(REBOND[j.rebond]||'')}</td></tr>`).join('');
+  const action = (a,i)=> `
+    <div class="block">
+      <h2>Action ${i+1}${a.titre ? ' : ' + esc(a.titre) : ''}</h2>
+      ${row('Cible', a.cible)}${row('Coût estimé (€)', a.cout)}${row('Outils et moyens', a.outils)}
+      ${row('Objectif attendu', a.objectif)}${row('Indicateur', a.indicateur)}${row('Justification', a.justif)}
+    </div>`;
+  const b = S.bilan || {};
+  $('#printArea').innerHTML = `
+    <h1>Dossier E33 : ${esc(e.nom || 'Mon entreprise')}</h1>
+    <p>Action retenue : ${esc((S.actions[+S.choix]||{}).titre || '')}</p>
+
+    <h2>Partie 1 : Fiche de l'entreprise</h2>
+    ${row('Nom', e.nom)}${row('Activité', e.activite)}${row('Forme juridique', e.statut)}
+    ${row('Effectif et surface', e.effectif)}${row('Gamme', e.gamme)}${row('Stratégie de prix', e.prix)}${row('Communication', e.com)}
+
+    <h2>Partie 2 : Étude de marché</h2>
+    ${row('Segment', m.segment)}${row('Chiffre d\'affaires', m.ca)}${row('Circuit', m.circuit)}
+    ${row('Concurrents', (m.concurrents||[]).filter(Boolean).join(' ; '))}
+    ${row('Profil des consommateurs', m.conso)}${row('Opportunités', m.opp)}${row('Menaces', m.menaces)}${row('Sources', m.sources)}
+
+    <h2>Partie 3 : Outils de fidélisation</h2>
+    ${tools.length ? `<table><tr><th>Outil</th><th>Présent dans le magasin</th><th>Utilisé en PFMP</th></tr>
+      ${tools.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.p?'Oui':''}</td><td>${x.u?'Oui':''}</td></tr>`).join('')}</table>` : '<p>Aucun outil renseigné.</p>'}
+
+    <h2>Partie 4 : Ma contribution</h2>
+    <p class="pre">${esc(S.contrib?.texte || '')}</p>
+    ${S.journal.length ? `<table><tr><th>N°</th><th>Date</th><th>Besoin du client</th><th>Ce que j'ai fait</th><th>Rebond</th></tr>${journalRows}</table>` : ''}
+
+    <h2>Partie 5 : Propositions d'actions</h2>
+    ${action(S.actions[0]||{},0)}
+    ${action(S.actions[1]||{},1)}
+
+    <h2>Suivi et bilan de l'action retenue</h2>
+    ${row('Ventes avant / après', (b.ventesAvant||'-') + ' / ' + (b.ventesApres||'-'))}
+    ${row('Panier moyen avant / après (€)', (b.panierAvant||'-') + ' / ' + (b.panierApres||'-'))}
+    ${row('Adhésions carte de fidélité', b.adhesions)}
+    ${row('Fiches SIC ajoutées ou enrichies', b.fiches)}
+    ${row('Rebonds repérés / provoqués / conclus', [ 'repere','provoquee','conclue' ].map(r=>S.journal.filter(j=>j.rebond===r).length).join(' / '))}
+    ${row('Résultats et analyse', b.resultats)}${row('Difficultés', b.difficultes)}
+    ${row('Acquis', b.acquis)}${row('Améliorations', b.ameliorations)}
+  `;
+}
+$('#btnPdf').addEventListener('click', ()=>{
+  buildPrint();
+  window.print();
+});
+
+/* ---------- Diaporama PowerPoint ---------- */
+let pptxReady = null;
+function loadPptx(){
+  if(window.PptxGenJS) return Promise.resolve();
+  if(!pptxReady){
+    pptxReady = new Promise((res, rej)=>{
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js';
+      s.onload = res;
+      s.onerror = ()=>{ pptxReady = null; rej(); };
+      document.head.appendChild(s);
+    });
+  }
+  return pptxReady;
+}
+function kw(text, n=4){
+  return String(text||'').split(/[\n.;]+/).map(s=>s.trim()).filter(Boolean)
+    .slice(0,n).map(s => s.length > 80 ? s.slice(0,77)+'…' : s);
+}
+$('#btnPptx').addEventListener('click', ()=>{
+  toast('Préparation du diaporama…');
+  loadPptx().then(()=>{
+    const p = new PptxGenJS();
+    p.layout = 'LAYOUT_WIDE';
+    const e = S.entreprise, m = S.marche, b = S.bilan || {};
+    const ch = S.actions[+S.choix] || {};
+    const navy = '14213D', orange = 'E85D04';
+
+    // Diapo 1 : titre
+    let s = p.addSlide();
+    s.background = {color: navy};
+    s.addText(e.nom || 'Mon entreprise', {x:0.7,y:1.8,w:12,h:1.2,fontFace:'Arial',fontSize:40,bold:true,color:'FFFFFF'});
+    s.addText('Fidélisation de la clientèle et développement de la relation client', {x:0.7,y:3.1,w:12,h:0.8,fontFace:'Arial',fontSize:22,color:'FFFFFF'});
+    s.addText('Action retenue : ' + (ch.titre || ''), {x:0.7,y:4.2,w:12,h:0.8,fontFace:'Arial',fontSize:20,bold:true,color:orange});
+
+    const slide = (title, lines)=>{
+      const sl = p.addSlide();
+      sl.background = {color:'FFFFFF'};
+      sl.addShape(p.ShapeType.rect, {x:0,y:0,w:13.33,h:1.1,fill:{color:navy},line:{color:navy}});
+      sl.addText(title, {x:0.6,y:0.18,w:12,h:0.75,fontFace:'Arial',fontSize:28,bold:true,color:'FFFFFF'});
+      if(lines.length){
+        sl.addText(lines.map(t=>({text:t, options:{bullet:true, breakLine:true}})), {x:0.6,y:1.5,w:12,h:5.4,fontFace:'Arial',fontSize:22,color:navy,valign:'top',paraSpaceAfter:10});
+      }
+      return sl;
+    };
+
+    slide('Mon entreprise et son marché', [
+      ...(e.activite ? [e.activite] : []),
+      ...(m.segment ? ['Segment : ' + m.segment] : []),
+      ...(m.circuit ? ['Circuit : ' + m.circuit.split(' (')[0]] : []),
+      ...kw(m.conso, 2),
+      ...((m.concurrents||[]).filter(Boolean).length ? ['Concurrents : ' + m.concurrents.filter(Boolean).slice(0,3).join(', ')] : [])
+    ]);
+
+    const present = TOOLS.filter((t,i)=> S.outils[i]?.present);
+    slide('Mes outils de fidélisation', present.length ? present.slice(0,6) : ['À compléter']);
+
+    const js = S.journal.slice(0,3).map((j,i)=> `Situation ${i+1} : ${kw(j.besoin,1)[0]||''}`);
+    slide('Ma contribution sur le terrain', js.length ? js : ['À compléter']);
+
+    [0,1].forEach(i=>{
+      const a = S.actions[i] || {};
+      slide(`Action ${i+1} : ${a.titre || ''}`, [
+        ...(a.cible ? ['Cible : ' + a.cible] : []),
+        ...(a.objectif ? ['Objectif : ' + a.objectif] : []),
+        ...(a.indicateur ? ['Indicateur : ' + a.indicateur] : []),
+        ...(a.cout ? ['Coût : ' + a.cout + ' €'] : [])
+      ].slice(0,4));
+    });
+
+    const rb = r => S.journal.filter(j=>j.rebond===r).length;
+    const bilanLines = [];
+    if(b.ventesAvant || b.ventesApres) bilanLines.push(`Ventes : ${b.ventesAvant||'-'} → ${b.ventesApres||'-'}`);
+    if(b.panierAvant || b.panierApres) bilanLines.push(`Panier moyen : ${b.panierAvant||'-'} € → ${b.panierApres||'-'} €`);
+    bilanLines.push(`Rebonds repérés ${rb('repere')} · provoqués ${rb('provoquee')} · conclus ${rb('conclue')}`);
+    if(b.adhesions) bilanLines.push(`Adhésions carte : ${b.adhesions}`);
+    slide('Bilan chiffré', bilanLines);
+
+    slide('Améliorations', kw(b.ameliorations, 4).length ? kw(b.ameliorations, 4) : ['À compléter']);
+
+    p.writeFile({fileName: 'Mon_Dossier_E33.pptx'})
+      .then(()=> toast('Diaporama téléchargé'))
+      .catch(()=> toast('Le téléchargement a échoué. Réessaie.'));
+  }).catch(()=> toast('Impossible de charger l\'export PowerPoint. Vérifie ta connexion internet.'));
+});
+
+/* ---------- Sauvegarde et restauration ---------- */
+$('#btnSave').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mon-dossier-e33-sauvegarde.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  toast('Sauvegarde téléchargée');
+});
+$('#restoreFile').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      localStorage.setItem(KEY, JSON.stringify(Object.assign(DEFAULT(), data)));
+      location.reload();
+    }catch(err){
+      toast('Ce fichier n\'est pas une sauvegarde valide.');
+    }
+  };
+  reader.readAsText(f);
+});
+$('#btnClear').addEventListener('click', e=>{
+  const b = e.currentTarget;
+  if(b.dataset.armed){
+    try{ localStorage.removeItem(KEY); }catch(err){}
+    location.reload();
+  } else {
+    b.dataset.armed = '1';
+    b.textContent = 'Confirmer l\'effacement';
+  }
+});
+
+/* ---------- Démarrage ---------- */
+renderStatic();
+bindAll();
+paintTimer();
+refresh();
+go('journal');
+</script>
+</body>
+</html>
